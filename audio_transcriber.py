@@ -118,7 +118,7 @@ class AudioTranscriber:
             
             with open(file_path, "rb") as audio_file:
                 transcript = self.client.audio.transcriptions.create(
-                    model="whisper-1",
+                    model="whisper-large-v2",
                     file=audio_file,
                     language=language,
                     response_format="text"
