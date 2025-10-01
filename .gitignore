@@ -54,3 +54,6 @@ results/
 # Temporary files
 tmp/
 temp/
+
+# Documentation (keep local only)
+docs/
