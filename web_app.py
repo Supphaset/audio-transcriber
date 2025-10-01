@@ -239,7 +239,9 @@ def upload_files():
         # Get form data
         language = request.form.get('language', 'th')
         summary_lang = request.form.get('summary_lang', 'thai')
-        model = request.form.get('model', 'whisper-1')
+        model = request.form.get('model', 'gpt-4o-mini-transcribe')
+        response_format = request.form.get('response_format', 'text')
+        prompt = request.form.get('prompt', '').strip()
         test_mode = request.form.get('test_mode') == 'on'
         
         # Generate unique session ID
@@ -277,6 +279,8 @@ def upload_files():
             'language': language,
             'summary_lang': summary_lang,
             'model': model,
+            'response_format': response_format,
+            'prompt': prompt,
             'test_mode': test_mode,
             'session_id': session_id
         }
@@ -299,7 +303,9 @@ def process_audio(session_id):
         files = request.args.getlist('files')
         language = request.args.get('language', 'th')
         summary_lang = request.args.get('summary_lang', 'thai')
-        model = request.args.get('model', 'whisper-1')
+        model = request.args.get('model', 'gpt-4o-mini-transcribe')
+        response_format = request.args.get('response_format', 'text')
+        prompt = request.args.get('prompt', '').strip()
         test_mode = request.args.get('test_mode') == 'True'
         
         if not files:
@@ -307,7 +313,8 @@ def process_audio(session_id):
             return redirect(url_for('index'))
         
         # Initialize transcriber
-        transcriber = AudioTranscriber(test_mode=test_mode, model=model)
+        transcriber = AudioTranscriber(test_mode=test_mode, model=model, 
+                                     response_format=response_format, prompt=prompt)
         
         # Create results directory for this session
         results_dir = Path(RESULTS_FOLDER) / session_id
@@ -327,16 +334,30 @@ def process_audio(session_id):
         # Generate summary
         summary = transcriber.generate_summary(transcript, summary_lang)
         
-        # Save results
+        # Save results with appropriate file extension
         prefix = f"session_{session_id[:8]}"
         if test_mode:
             prefix += "_test"
         
-        transcript_file = results_dir / f"{prefix}_transcript.txt"
+        # Determine file extension based on response format
+        if response_format == "srt":
+            transcript_file = results_dir / f"{prefix}_transcript.srt"
+        elif response_format == "vtt":
+            transcript_file = results_dir / f"{prefix}_transcript.vtt"
+        elif response_format in ["json", "verbose_json"]:
+            transcript_file = results_dir / f"{prefix}_transcript.json"
+        else:
+            transcript_file = results_dir / f"{prefix}_transcript.txt"
+        
         summary_file = results_dir / f"{prefix}_summary.txt"
         
+        # Save transcript with proper formatting
         with open(transcript_file, 'w', encoding='utf-8') as f:
-            f.write(transcript)
+            if response_format in ["json", "verbose_json"]:
+                import json
+                f.write(json.dumps(transcript, indent=2, ensure_ascii=False))
+            else:
+                f.write(str(transcript))
         
         with open(summary_file, 'w', encoding='utf-8') as f:
             f.write(summary)

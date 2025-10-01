@@ -42,10 +42,41 @@
             <span class="emoji">🤖</span> AI Model
         </label>
         <select id="model" name="model">
-            <option value="whisper-1">Whisper-1 (Only model available via OpenAI API) - $0.006/min</option>
+            <option value="whisper-1">Whisper-1 (Standard) - $0.006/min</option>
+            <option value="gpt-4o-transcribe">GPT-4o Transcribe (Better Accuracy) - $0.006/min</option>
+            <option value="gpt-4o-mini-transcribe">GPT-4o Mini Transcribe (Fast + Accurate) - $0.003/min</option>
         </select>
         <small style="color: #666; margin-top: 5px; display: block;">
-            <strong>Note:</strong> OpenAI API currently only supports whisper-1 model
+            <strong>Recommended:</strong> GPT-4o Mini for best cost/performance balance
+        </small>
+    </div>
+
+    <div class="form-group">
+        <label for="response_format">
+            <span class="emoji">📄</span> Output Format
+        </label>
+        <select id="response_format" name="response_format">
+            <option value="text">Text Only (Standard)</option>
+            <option value="json">JSON with Metadata</option>
+            <option value="srt">SRT Subtitles with Timestamps</option>
+            <option value="vtt">VTT Subtitles with Timestamps</option>
+            <option value="verbose_json">Detailed JSON with Word Timestamps</option>
+        </select>
+        <small style="color: #666; margin-top: 5px; display: block;">
+            <strong>Tip:</strong> Use SRT/VTT for subtitles, Verbose JSON for detailed analysis
+        </small>
+    </div>
+
+    <div class="form-group">
+        <label for="prompt">
+            <span class="emoji">💭</span> Transcription Guidance (Optional)
+        </label>
+        <textarea id="prompt" name="prompt" 
+                  placeholder="Enter specific terminology, names, or style guidance for better accuracy..."
+                  rows="2"
+                  style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-family: inherit; resize: vertical;"></textarea>
+        <small style="color: #666; margin-top: 5px; display: block;">
+            <strong>Example:</strong> "Include technical terms like API, database, webhook"
         </small>
     </div>
 
@@ -92,7 +123,10 @@
     </h3>
     <ol style="line-height: 1.8; color: #555;">
         <li><strong>Select your audio files</strong> - Choose one or more audio files (M4A, MP3, WAV, MP4)</li>
-        <li><strong>Choose languages</strong> - Select the language of your audio and preferred summary language</li>
+        <li><strong>Choose AI model</strong> - Select transcription model (GPT-4o Mini recommended)</li>
+        <li><strong>Pick output format</strong> - Choose text, subtitles (SRT/VTT), or detailed JSON</li>
+        <li><strong>Add guidance (optional)</strong> - Provide terminology hints for better accuracy</li>
+        <li><strong>Choose languages</strong> - Select audio language and preferred summary language</li>
         <li><strong>Test mode (optional)</strong> - Enable to process only 1 minute for quick testing</li>
         <li><strong>Click "Start Transcription"</strong> - Wait for processing to complete</li>
         <li><strong>Download results</strong> - Get your transcript and summary files</li>
@@ -101,16 +135,21 @@
 
 <div style="margin-top: 20px; padding: 20px; background: #fff3cd; border-radius: 10px; border-left: 4px solid #ffc107;">
     <h3 style="color: #856404; margin-bottom: 15px;">
-        <span class="emoji">ℹ️</span> Model Information
+        <span class="emoji">🤖</span> AI Model Comparison
     </h3>
-    <div style="color: #856404; line-height: 1.8;">
-        <p><strong>🤖 Whisper-1:</strong> OpenAI's production transcription model</p>
-        <ul style="margin-left: 20px; margin-top: 10px;">
-            <li>Only model available through OpenAI API</li>
-            <li>Optimized for production use and reliability</li>
-            <li>Supports 50+ languages including Thai</li>
-            <li>Good balance of speed and accuracy</li>
-        </ul>
+    <div style="color: #856404; line-height: 1.6;">
+        <div style="margin-bottom: 12px;">
+            <strong>🥉 Whisper-1:</strong> Standard transcription model<br>
+            <small style="opacity: 0.8;">• Original Whisper model • Reliable performance • $0.006/min</small>
+        </div>
+        <div style="margin-bottom: 12px;">
+            <strong>🥈 GPT-4o Transcribe:</strong> Enhanced accuracy model<br>
+            <small style="opacity: 0.8;">• Better Word Error Rate • Advanced RL training • $0.006/min</small>
+        </div>
+        <div style="margin-bottom: 12px;">
+            <strong>🏆 GPT-4o Mini Transcribe:</strong> Best value (Recommended)<br>
+            <small style="opacity: 0.8;">• Excellent accuracy • 50% cheaper • Fastest processing • $0.003/min</small>
+        </div>
     </div>
 </div>
 
@@ -119,9 +158,10 @@
         <span class="emoji">💰</span> Pricing Information
     </h3>
     <p style="color: #2e7d32; line-height: 1.6;">
-        <strong>Transcription:</strong> $0.006 per minute<br>
+        <strong>Whisper-1 & GPT-4o Transcribe:</strong> $0.006 per minute<br>
+        <strong>GPT-4o Mini Transcribe:</strong> $0.003 per minute (50% cheaper!)<br>
         <strong>Summary:</strong> ~$0.003 per transcript<br>
-        <strong>Example:</strong> 1 hour audio ≈ $0.36 total
+        <strong>Example with GPT-4o Mini:</strong> 1 hour audio ≈ $0.18 total
     </p>
 </div>
 

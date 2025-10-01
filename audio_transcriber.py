@@ -26,7 +26,8 @@ except ImportError:
 load_dotenv()
 
 class AudioTranscriber:
-    def __init__(self, api_key: str = None, test_mode: bool = False, model: str = "whisper-1"):
+    def __init__(self, api_key: str = None, test_mode: bool = False, model: str = "gpt-4o-mini-transcribe", 
+                 response_format: str = "text", prompt: str = ""):
         self.client = OpenAI(api_key=api_key or os.getenv('OPENAI_API_KEY'))
         if not self.client.api_key:
             raise ValueError("OpenAI API key not found. Please set OPENAI_API_KEY in .env file")
@@ -36,6 +37,8 @@ class AudioTranscriber:
         self.test_mode = test_mode
         self.test_duration_ms = 60 * 1000  # 1 minute for test mode
         self.model = model
+        self.response_format = response_format
+        self.prompt = prompt
         
     def find_sequential_files(self, directory: str, pattern_prefix: str) -> List[Path]:
         """Find and sort sequential audio files based on naming pattern"""
@@ -118,16 +121,32 @@ class AudioTranscriber:
             start_time = time.time()
             
             with open(file_path, "rb") as audio_file:
-                transcript = self.client.audio.transcriptions.create(
-                    model=self.model,
-                    file=audio_file,
-                    language=language,
-                    response_format="text"
-                )
+                # Build transcription parameters
+                transcribe_params = {
+                    "model": self.model,
+                    "file": audio_file,
+                    "language": language,
+                    "response_format": self.response_format
+                }
+                
+                # Add prompt if provided
+                if self.prompt:
+                    transcribe_params["prompt"] = self.prompt
+                
+                # Add timestamp granularities for detailed formats
+                if self.response_format == "verbose_json":
+                    transcribe_params["timestamp_granularities"] = ["word"]
+                
+                transcript = self.client.audio.transcriptions.create(**transcribe_params)
             
             elapsed_time = time.time() - start_time
             print(f"  ✅ Completed in {elapsed_time:.1f}s")
-            return transcript.strip()
+            
+            # Handle different response formats
+            if self.response_format in ["json", "verbose_json"]:
+                return transcript  # Already a dict/object
+            else:
+                return transcript.strip() if hasattr(transcript, 'strip') else transcript
         except Exception as e:
             print(f"  ❌ Error transcribing {file_path.name}: {str(e)}")
             return f"[ERROR: Could not transcribe {file_path.name}]"
