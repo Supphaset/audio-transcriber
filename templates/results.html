@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Results - Audio Transcriber{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin-bottom: 30px;">
+    <h2 style="color: #4CAF50; margin-bottom: 10px;">
+        <span class="emoji">✅</span> Transcription Complete!
+    </h2>
+    {% if test_mode %}
+    <p style="color: #ff9800; font-weight: bold;">
+        <span class="emoji">🧪</span> Test Mode Results (1 minute sample)
+    </p>
+    {% endif %}
+</div>
+
+<div class="results-container">
+    <div class="result-section">
+        <h3>
+            <span class="emoji">📝</span> Transcript
+        </h3>
+        <div class="result-text">{{ transcript }}</div>
+    </div>
+    
+    <div class="result-section">
+        <h3>
+            <span class="emoji">📊</span> Summary
+        </h3>
+        <div class="result-text">{{ summary }}</div>
+    </div>
+</div>
+
+<div class="download-section">
+    <a href="{{ url_for('download_file', session_id=session_id, filename=transcript_file) }}" 
+       class="btn">
+        <span class="emoji">📄</span> Download Transcript
+    </a>
+    
+    <a href="{{ url_for('download_file', session_id=session_id, filename=summary_file) }}" 
+       class="btn btn-secondary">
+        <span class="emoji">📋</span> Download Summary
+    </a>
+    
+    <a href="{{ url_for('download_all', session_id=session_id) }}" 
+       class="btn" 
+       style="background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);">
+        <span class="emoji">📦</span> Download All (ZIP)
+    </a>
+</div>
+
+<div style="margin-top: 30px; text-align: center;">
+    <a href="{{ url_for('index') }}" class="btn" style="background: linear-gradient(135deg, #607D8B 0%, #455A64 100%);">
+        <span class="emoji">🔄</span> Process More Files
+    </a>
+</div>
+
+{% if not test_mode %}
+<div style="margin-top: 30px; padding: 20px; background: #e8f5e8; border-radius: 10px; border-left: 4px solid #4CAF50;">
+    <h3 style="color: #2e7d32; margin-bottom: 10px;">
+        <span class="emoji">💡</span> Pro Tip
+    </h3>
+    <p style="color: #2e7d32; line-height: 1.6;">
+        Want to test new files quickly? Use the <strong>Test Mode</strong> to process just the first minute 
+        and save on API costs before running full transcriptions.
+    </p>
+</div>
+{% endif %}
+
+<script>
+// Auto-scroll to top
+window.scrollTo(0, 0);
+
+// Add copy to clipboard functionality
+function addCopyButtons() {
+    const resultTexts = document.querySelectorAll('.result-text');
+    resultTexts.forEach((text, index) => {
+        const copyBtn = document.createElement('button');
+        copyBtn.innerHTML = '<span class="emoji">📋</span> Copy';
+        copyBtn.className = 'btn';
+        copyBtn.style.cssText = 'position: absolute; top: 10px; right: 10px; padding: 8px 15px; font-size: 14px; width: auto;';
+        
+        // Make parent relative
+        text.parentElement.style.position = 'relative';
+        text.parentElement.appendChild(copyBtn);
+        
+        copyBtn.addEventListener('click', function() {
+            navigator.clipboard.writeText(text.textContent).then(function() {
+                copyBtn.innerHTML = '<span class="emoji">✅</span> Copied!';
+                setTimeout(function() {
+                    copyBtn.innerHTML = '<span class="emoji">📋</span> Copy';
+                }, 2000);
+            });
+        });
+    });
+}
+
+// Add copy buttons when page loads
+document.addEventListener('DOMContentLoaded', addCopyButtons);
+</script>
+{% endblock %}

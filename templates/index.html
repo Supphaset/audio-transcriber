@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="{{ url_for('upload_files') }}" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="audio_files">
+            <span class="emoji">📁</span> Select Audio Files
+        </label>
+        <input type="file" 
+               id="audio_files" 
+               name="audio_files" 
+               multiple 
+               accept=".m4a,.mp3,.wav,.mp4"
+               required>
+        <small style="color: #666; margin-top: 5px; display: block;">
+            Supported formats: M4A, MP3, WAV, MP4 (Max 100MB per file)
+        </small>
+    </div>
+
+    <div class="form-group">
+        <label for="language">
+            <span class="emoji">🌍</span> Transcription Language
+        </label>
+        <select id="language" name="language">
+            <option value="th">Thai (ไทย)</option>
+            <option value="en">English</option>
+            <option value="zh">Chinese (中文)</option>
+            <option value="ja">Japanese (日本語)</option>
+            <option value="ko">Korean (한국어)</option>
+            <option value="es">Spanish (Español)</option>
+            <option value="fr">French (Français)</option>
+            <option value="de">German (Deutsch)</option>
+            <option value="it">Italian (Italiano)</option>
+            <option value="pt">Portuguese (Português)</option>
+            <option value="ru">Russian (Русский)</option>
+            <option value="ar">Arabic (العربية)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="summary_lang">
+            <span class="emoji">📝</span> Summary Language
+        </label>
+        <select id="summary_lang" name="summary_lang">
+            <option value="thai">Thai (ไทย)</option>
+            <option value="english">English</option>
+            <option value="chinese">Chinese (中文)</option>
+            <option value="japanese">Japanese (日本語)</option>
+            <option value="korean">Korean (한국어)</option>
+            <option value="spanish">Spanish (Español)</option>
+            <option value="french">French (Français)</option>
+            <option value="german">German (Deutsch)</option>
+            <option value="italian">Italian (Italiano)</option>
+            <option value="portuguese">Portuguese (Português)</option>
+            <option value="russian">Russian (Русский)</option>
+            <option value="arabic">Arabic (العربية)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <div class="checkbox-group">
+            <input type="checkbox" id="test_mode" name="test_mode">
+            <label for="test_mode" style="margin-bottom: 0;">
+                <span class="emoji">🧪</span> Test Mode (Process only first 1 minute)
+            </label>
+        </div>
+        <small style="color: #666; margin-top: 5px; display: block;">
+            Perfect for testing before full transcription. Saves API costs!
+        </small>
+    </div>
+
+    <button type="submit" class="btn">
+        <span class="emoji">🚀</span> Start Transcription
+    </button>
+</form>
+
+<div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+    <h3 style="color: #333; margin-bottom: 15px;">
+        <span class="emoji">💡</span> How to Use
+    </h3>
+    <ol style="line-height: 1.8; color: #555;">
+        <li><strong>Select your audio files</strong> - Choose one or more audio files (M4A, MP3, WAV, MP4)</li>
+        <li><strong>Choose languages</strong> - Select the language of your audio and preferred summary language</li>
+        <li><strong>Test mode (optional)</strong> - Enable to process only 1 minute for quick testing</li>
+        <li><strong>Click "Start Transcription"</strong> - Wait for processing to complete</li>
+        <li><strong>Download results</strong> - Get your transcript and summary files</li>
+    </ol>
+</div>
+
+<div style="margin-top: 20px; padding: 20px; background: #e8f5e8; border-radius: 10px; border-left: 4px solid #4CAF50;">
+    <h3 style="color: #2e7d32; margin-bottom: 10px;">
+        <span class="emoji">💰</span> Cost Information
+    </h3>
+    <p style="color: #2e7d32; line-height: 1.6;">
+        <strong>Transcription:</strong> $0.006 per minute<br>
+        <strong>Summary:</strong> ~$0.003 per transcript<br>
+        <strong>Example:</strong> 1 hour of audio ≈ $0.36 total
+    </p>
+</div>
+
+<script>
+// Add file validation and preview
+document.getElementById('audio_files').addEventListener('change', function(e) {
+    const files = e.target.files;
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    let totalSize = 0;
+    let validFiles = 0;
+    
+    for (let file of files) {
+        if (file.size > maxSize) {
+            alert(`File "${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum size is 100MB.`);
+            e.target.value = '';
+            return;
+        }
+        totalSize += file.size;
+        validFiles++;
+    }
+    
+    if (validFiles > 0) {
+        const totalMB = (totalSize / 1024 / 1024).toFixed(1);
+        console.log(`${validFiles} files selected (${totalMB}MB total)`);
+    }
+});
+
+// Auto-match summary language to transcription language
+document.getElementById('language').addEventListener('change', function(e) {
+    const langMap = {
+        'th': 'thai',
+        'en': 'english',
+        'zh': 'chinese',
+        'ja': 'japanese',
+        'ko': 'korean',
+        'es': 'spanish',
+        'fr': 'french',
+        'de': 'german',
+        'it': 'italian',
+        'pt': 'portuguese',
+        'ru': 'russian',
+        'ar': 'arabic'
+    };
+    
+    const summarySelect = document.getElementById('summary_lang');
+    if (langMap[e.target.value]) {
+        summarySelect.value = langMap[e.target.value];
+    }
+});
+</script>
+{% endblock %}
