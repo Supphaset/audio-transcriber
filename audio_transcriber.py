@@ -26,7 +26,7 @@ except ImportError:
 load_dotenv()
 
 class AudioTranscriber:
-    def __init__(self, api_key: str = None, test_mode: bool = False):
+    def __init__(self, api_key: str = None, test_mode: bool = False, model: str = "whisper-large-v2"):
         self.client = OpenAI(api_key=api_key or os.getenv('OPENAI_API_KEY'))
         if not self.client.api_key:
             raise ValueError("OpenAI API key not found. Please set OPENAI_API_KEY in .env file")
@@ -35,6 +35,7 @@ class AudioTranscriber:
         self.chunk_length_ms = 10 * 60 * 1000  # 10 minutes in milliseconds
         self.test_mode = test_mode
         self.test_duration_ms = 60 * 1000  # 1 minute for test mode
+        self.model = model
         
     def find_sequential_files(self, directory: str, pattern_prefix: str) -> List[Path]:
         """Find and sort sequential audio files based on naming pattern"""
@@ -118,7 +119,7 @@ class AudioTranscriber:
             
             with open(file_path, "rb") as audio_file:
                 transcript = self.client.audio.transcriptions.create(
-                    model="whisper-large-v2",
+                    model=self.model,
                     file=audio_file,
                     language=language,
                     response_format="text"

@@ -239,6 +239,7 @@ def upload_files():
         # Get form data
         language = request.form.get('language', 'th')
         summary_lang = request.form.get('summary_lang', 'thai')
+        model = request.form.get('model', 'whisper-large-v2')
         test_mode = request.form.get('test_mode') == 'on'
         
         # Generate unique session ID
@@ -275,6 +276,7 @@ def upload_files():
             'files': [str(f) for f in uploaded_files],
             'language': language,
             'summary_lang': summary_lang,
+            'model': model,
             'test_mode': test_mode,
             'session_id': session_id
         }
@@ -297,6 +299,7 @@ def process_audio(session_id):
         files = request.args.getlist('files')
         language = request.args.get('language', 'th')
         summary_lang = request.args.get('summary_lang', 'thai')
+        model = request.args.get('model', 'whisper-large-v2')
         test_mode = request.args.get('test_mode') == 'True'
         
         if not files:
@@ -304,7 +307,7 @@ def process_audio(session_id):
             return redirect(url_for('index'))
         
         # Initialize transcriber
-        transcriber = AudioTranscriber(test_mode=test_mode)
+        transcriber = AudioTranscriber(test_mode=test_mode, model=model)
         
         # Create results directory for this session
         results_dir = Path(RESULTS_FOLDER) / session_id
