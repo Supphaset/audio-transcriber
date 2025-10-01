@@ -7,6 +7,8 @@ Mobile-friendly interface for audio transcription using OpenAI Whisper
 import os
 import tempfile
 import zipfile
+import threading
+import time
 from pathlib import Path
 from flask import Flask, request, render_template, redirect, url_for, flash, send_file, jsonify, session
 from werkzeug.utils import secure_filename
@@ -49,6 +51,70 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 # Create directories
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
+
+# Cleanup configuration
+RESULT_RETENTION_HOURS = 24  # Keep results for 24 hours
+CLEANUP_INTERVAL_MINUTES = 60  # Run cleanup every hour
+
+def cleanup_old_files():
+    """Remove old upload and result files"""
+    try:
+        current_time = time.time()
+        retention_seconds = RESULT_RETENTION_HOURS * 3600
+        
+        # Clean uploads folder
+        uploads_path = Path(UPLOAD_FOLDER)
+        if uploads_path.exists():
+            for session_dir in uploads_path.iterdir():
+                if session_dir.is_dir():
+                    # Check if session folder is old
+                    dir_age = current_time - session_dir.stat().st_mtime
+                    if dir_age > retention_seconds:
+                        import shutil
+                        shutil.rmtree(session_dir, ignore_errors=True)
+                        print(f"🧹 Cleaned up old upload session: {session_dir.name}")
+        
+        # Clean results folder
+        results_path = Path(RESULTS_FOLDER)
+        if results_path.exists():
+            for session_dir in results_path.iterdir():
+                if session_dir.is_dir():
+                    # Check if session folder is old
+                    dir_age = current_time - session_dir.stat().st_mtime
+                    if dir_age > retention_seconds:
+                        import shutil
+                        shutil.rmtree(session_dir, ignore_errors=True)
+                        print(f"🧹 Cleaned up old result session: {session_dir.name}")
+                        
+        # Also clean individual old files
+        for folder in [uploads_path, results_path]:
+            if folder.exists():
+                for file_path in folder.rglob('*'):
+                    if file_path.is_file():
+                        file_age = current_time - file_path.stat().st_mtime
+                        if file_age > retention_seconds:
+                            file_path.unlink(missing_ok=True)
+                            
+    except Exception as e:
+        print(f"🔧 Cleanup error (non-critical): {e}")
+
+def start_cleanup_scheduler():
+    """Start background cleanup scheduler"""
+    def cleanup_loop():
+        while True:
+            time.sleep(CLEANUP_INTERVAL_MINUTES * 60)  # Convert to seconds
+            cleanup_old_files()
+    
+    # Run initial cleanup
+    cleanup_old_files()
+    
+    # Start background thread
+    cleanup_thread = threading.Thread(target=cleanup_loop, daemon=True)
+    cleanup_thread.start()
+    print(f"🧹 Started auto-cleanup: keeping files for {RESULT_RETENTION_HOURS}h, checking every {CLEANUP_INTERVAL_MINUTES}m")
+
+# Start cleanup scheduler when app starts
+start_cleanup_scheduler()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
