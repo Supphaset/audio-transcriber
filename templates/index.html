@@ -42,12 +42,10 @@
             <span class="emoji">🤖</span> AI Model
         </label>
         <select id="model" name="model">
-            <option value="whisper-large-v2">Whisper Large V2 (Best for Thai) - $0.006/min</option>
-            <option value="whisper-1">Whisper Basic (Fast & Cheap) - $0.006/min</option>
-            <option value="whisper-large-v3">Whisper Large V3 (Latest) - $0.006/min</option>
+            <option value="whisper-1">Whisper-1 (Only model available via OpenAI API) - $0.006/min</option>
         </select>
         <small style="color: #666; margin-top: 5px; display: block;">
-            <strong>Recommended:</strong> Large V2 for Thai language accuracy
+            <strong>Note:</strong> OpenAI API currently only supports whisper-1 model
         </small>
     </div>
 
@@ -101,32 +99,27 @@
     </ol>
 </div>
 
-<div style="margin-top: 20px; padding: 20px; background: #e8f5e8; border-radius: 10px; border-left: 4px solid #4CAF50;">
-    <h3 style="color: #2e7d32; margin-bottom: 15px;">
-        <span class="emoji">🤖</span> Model Comparison
+<div style="margin-top: 20px; padding: 20px; background: #fff3cd; border-radius: 10px; border-left: 4px solid #ffc107;">
+    <h3 style="color: #856404; margin-bottom: 15px;">
+        <span class="emoji">ℹ️</span> Model Information
     </h3>
-    <div style="color: #2e7d32; line-height: 1.8;">
-        <div style="margin-bottom: 12px;">
-            <strong>🏆 Whisper Large V2:</strong> Best accuracy for Thai language<br>
-            <small style="opacity: 0.8;">• Excellent for non-English languages • Recommended for Thai audio</small>
-        </div>
-        <div style="margin-bottom: 12px;">
-            <strong>⚡ Whisper Basic:</strong> Fastest processing, good for English<br>
-            <small style="opacity: 0.8;">• Quick results • Lower accuracy for Thai • Good for testing</small>
-        </div>
-        <div style="margin-bottom: 12px;">
-            <strong>🆕 Whisper Large V3:</strong> Latest model with mixed results<br>
-            <small style="opacity: 0.8;">• Newest technology • May have reduced Thai accuracy</small>
-        </div>
+    <div style="color: #856404; line-height: 1.8;">
+        <p><strong>🤖 Whisper-1:</strong> OpenAI's production transcription model</p>
+        <ul style="margin-left: 20px; margin-top: 10px;">
+            <li>Only model available through OpenAI API</li>
+            <li>Optimized for production use and reliability</li>
+            <li>Supports 50+ languages including Thai</li>
+            <li>Good balance of speed and accuracy</li>
+        </ul>
     </div>
 </div>
 
-<div style="margin-top: 20px; padding: 20px; background: #fff3cd; border-radius: 10px; border-left: 4px solid #ffc107;">
-    <h3 style="color: #856404; margin-bottom: 10px;">
+<div style="margin-top: 20px; padding: 20px; background: #e8f5e8; border-radius: 10px; border-left: 4px solid #4CAF50;">
+    <h3 style="color: #2e7d32; margin-bottom: 10px;">
         <span class="emoji">💰</span> Pricing Information
     </h3>
-    <p style="color: #856404; line-height: 1.6;">
-        <strong>All Models:</strong> $0.006 per minute<br>
+    <p style="color: #2e7d32; line-height: 1.6;">
+        <strong>Transcription:</strong> $0.006 per minute<br>
         <strong>Summary:</strong> ~$0.003 per transcript<br>
         <strong>Example:</strong> 1 hour audio ≈ $0.36 total
     </p>

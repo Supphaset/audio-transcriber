@@ -239,7 +239,7 @@ def upload_files():
         # Get form data
         language = request.form.get('language', 'th')
         summary_lang = request.form.get('summary_lang', 'thai')
-        model = request.form.get('model', 'whisper-large-v2')
+        model = request.form.get('model', 'whisper-1')
         test_mode = request.form.get('test_mode') == 'on'
         
         # Generate unique session ID
@@ -299,7 +299,7 @@ def process_audio(session_id):
         files = request.args.getlist('files')
         language = request.args.get('language', 'th')
         summary_lang = request.args.get('summary_lang', 'thai')
-        model = request.args.get('model', 'whisper-large-v2')
+        model = request.args.get('model', 'whisper-1')
         test_mode = request.args.get('test_mode') == 'True'
         
         if not files:

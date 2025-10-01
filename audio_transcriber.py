@@ -26,7 +26,7 @@ except ImportError:
 load_dotenv()
 
 class AudioTranscriber:
-    def __init__(self, api_key: str = None, test_mode: bool = False, model: str = "whisper-large-v2"):
+    def __init__(self, api_key: str = None, test_mode: bool = False, model: str = "whisper-1"):
         self.client = OpenAI(api_key=api_key or os.getenv('OPENAI_API_KEY'))
         if not self.client.api_key:
             raise ValueError("OpenAI API key not found. Please set OPENAI_API_KEY in .env file")
